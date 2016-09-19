@@ -1,0 +1,8 @@
+{
+  "name":"Communication Platform Service Bus",
+  "address": "104.131.157.72",
+  "port": "5672",
+  "user": "admin",
+  "password": "admin",
+  "protocol":"AMQP"
+}

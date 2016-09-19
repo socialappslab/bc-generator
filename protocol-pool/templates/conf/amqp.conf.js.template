@@ -1,0 +1,10 @@
+module.exports = {
+    address: 'VAR_URL',
+    port: 'VAR_PORT',
+    user: 'VAR_USER',
+    password: 'VAR_PASSWORD',
+    exchange:{
+      name:'VAR_EXCHANGE',
+      type:'VAR_TYPE'
+    }
+};
