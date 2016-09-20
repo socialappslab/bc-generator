@@ -13,7 +13,7 @@
 var amqp = require('amqplib/callback_api');
 var conf = require('./conf/amqp-endpoint.conf');
 var out = require(VAR_SENDER);
-
+var Message = require('./lib/message');
 
 /**
  * Receives a message from a Social Entity.
@@ -39,8 +39,10 @@ exports.listen = function() {
                 ch.bindQueue(q.queue, ex, '');
 
                 ch.consume(q.queue, function(msg) {
-                    console.log(" [x] %s", msg.content.toString());
-                    out.post(msg.content.toString());
+                    var message = JSON.parse(msg.content.toString());
+                    message.__proto__ = Message.prototype;
+                    console.log(" [x] %s", message.getData());
+                    out.post(message.getData());
                 });
 
             }, {

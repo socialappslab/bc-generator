@@ -8,29 +8,6 @@ var smtp = require('./protocol-pool/smtp');
 
 var conf = require('./generator.conf');
 
-exports.httpEndpoint = function(folder, description, to) {
-    fs.readFile(templateFolder + 'http-endpoint.js.template', 'utf-8', function(err, data) {
-        if (err) throw err;
-        var out = data;
-        fs.writeFile(folder + '/http-endpoint.js', out, (err) => {
-            if (err) throw err;
-            console.log('http-entpoint.js saved!');
-        });
-
-    });
-
-    fs.readFile(templateFolder + 'routes.js.template', 'utf-8', function(err, data) {
-        if (err) throw err;
-        var out = data;
-        var out = data.replace('VAR_SENDER', '\'./' + to.protocol.toLowerCase() + '-sender\'');
-        fs.writeFile(folder + '/routes.js', out, (err) => {
-            if (err) throw err;
-            console.log('routes.js saved!');
-        });
-
-    });
-}
-
 
 //BC Starter
 function bcStarter(folder, description) {
@@ -46,7 +23,17 @@ function bcStarter(folder, description) {
     });
 }
 
+//Libraries
+function libraries(folder) {
+    mkdirp(folder + '/lib', function(err) {
+        if (err) throw err;
+        fs.createReadStream(conf.templateFolder + 'lib/message.js')
+            .pipe(fs.createWriteStream(folder + '/lib/message.js'));
+    });
+}
+
 exports.generate = function(folder, from, to) {
+    //endpoint
     switch (from.protocol.toLowerCase()) {
         case 'http':
             http.httpEndpoint(folder, from, to);
@@ -70,5 +57,6 @@ exports.generate = function(folder, from, to) {
             console.log('sender for ' +
                 from.protocol.toLowerCase() + ' is not implemented :(')
     }
+    libraries(folder);
     bcStarter(folder, from);
 }
