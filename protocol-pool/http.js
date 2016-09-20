@@ -2,7 +2,7 @@ var fs = require('fs');
 var utils = require('../utils');
 var conf = require('../generator.conf');
 
-
+//Endpoint
 exports.httpEndpoint = function(folder, description, to) {
     //main
     fs.readFile(conf.templateFolder + 'http-endpoint.js.template', 'utf-8', function(err, data) {
@@ -32,6 +32,30 @@ exports.httpEndpoint = function(folder, description, to) {
         var out = data;
         fs.writeFile(folder + '/conf/http-endpoint.conf.js', out, (err) => {
             if (err) throw err;
+        });
+
+
+    });
+}
+
+//Sender
+exports.httpSender = function(folder, description) {
+    fs.readFile(conf.templateFolder + 'http-sender.js.template', 'utf-8', function(err, data) {
+        if (err) throw err;
+        var out = data;
+        fs.writeFile(folder + '/http-sender.js', out, (err) => {
+            if (err) throw err;
+            console.log('http-sender saved!');
+        });
+
+    });
+    fs.readFile(conf.templateFolder + 'conf/http-sender.conf.json.template', 'utf-8', function(err, data) {
+        if (err) throw err;
+
+        var out = data.replace('VAR_WEBHOOKURL', utils.setDoubleQuotes(description.address));
+        fs.writeFile(folder + '/conf/http-sender.conf.json', out, (err) => {
+            if (err) throw err;
+            console.log('Sender conf saved!');
         });
 
 

@@ -53,6 +53,9 @@ exports.generate = function(folder, from, to) {
         case 'smtp':
             smtp.smtpSender(folder);
             break;
+        case 'http':
+            http.httpSender(folder, to);
+            break;
         default:
             console.log('sender for ' +
                 from.protocol.toLowerCase() + ' is not implemented :(')
