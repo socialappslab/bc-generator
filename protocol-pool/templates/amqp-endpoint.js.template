@@ -27,27 +27,50 @@ exports.listen = function() {
     connection = 'amqp://' + conf.user + ':' + conf.password +
         '@' + conf.address + ':' + conf.port;
     amqp.connect(connection, function(err, conn) {
-        conn.createChannel(function(err, ch) {
-            ex = VAR_QUEUE;
-            ch.assertExchange(ex, conf.exchange.type, {
-                durable: true
+        if (err) {
+            console.log(err.stack);
+        } else {
+            //connection error handling
+            conn.on('error', function(err) {
+                console.log('An error occurred: ' + err);
             });
-            ch.assertQueue(VAR_QUEUE, {
-                exclusive: true
-            }, function(err, q) {
-                console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
-                ch.bindQueue(q.queue, ex, '');
 
-                ch.consume(q.queue, function(msg) {
-                    var message = JSON.parse(msg.content.toString());
-                    message.__proto__ = Message.prototype;
-                    console.log(" [x] %s", message.getData());
-                    out.post(message.getData());
-                });
-
-            }, {
-                noAck: true
+            conn.createChannel(function(err, ch) {
+                if (err) {
+                    console.log(err.stack);
+                } else {
+                    connect(ch);
+                }
             });
-        });
+        }
     });
 };
+
+
+function connect(ch) {
+
+    ex = VAR_QUEUE;
+    ch.assertExchange(ex, conf.exchange.type, {
+        durable: true
+    });
+    ch.assertQueue(VAR_QUEUE, {
+        exclusive: true
+    }, function(err, q) {
+        if (err) {
+            console.log(err.stack);
+        } else {
+            console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
+            ch.bindQueue(q.queue, ex, '');
+
+            ch.consume(q.queue, function(msg) {
+                var message = JSON.parse(msg.content.toString());
+                message.__proto__ = Message.prototype;
+                console.log(" [x] %s", message.getData());
+                out.post(message.getData());
+            });
+        }
+
+    }, {
+        noAck: true
+    });
+}

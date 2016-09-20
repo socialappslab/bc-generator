@@ -7,3 +7,8 @@ exports.setDoubleQuotes = function(str) {
     str = str.replace(/"/g, "").replace(/'/g, "");
     return '\"' + str + "\"";
 }
+
+exports.setSimpleQuotes = function(str) {
+    str = str.replace(/"/g, "").replace(/'/g, "");
+    return '\'' + str + "\'";
+}
